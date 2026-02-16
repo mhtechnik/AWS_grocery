@@ -3,3 +3,8 @@ frontend/frontend-build.zip
 frontend/temp_extract/
 frontend/src/config.js~
 venv/
+infrastructure/tofu/*.tfvars
+infrastructure/tofu/.terraform/
+infrastructure/tofu/.terraform.lock.hcl
+infrastructure/tofu/terraform.tfstate*
+echo "*.tfplan" >> .gitignore
