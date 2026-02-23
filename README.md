@@ -25,6 +25,7 @@
   - [Configure PostgreSQL](#-configure-postgresql)
   - [Populate Database](#-populate-database)
   - [Set Up Python Environment](#-set-up-python-environment)
+  - [Optional: Run with Docker](#-optional-run-with-docker)
   - [Set Environment Variables](#-set-environment-variables)
   - [Start the Application](#-start-the-application)
 - [Usage](#-usage)
@@ -63,6 +64,7 @@ https://github.com/user-attachments/assets/d1c5c8e4-5b16-486a-b709-4cf6e6cce6bc
 Ensure the following dependencies are installed before running the application:
 
 - **🐍 Python (>=3.11)**
+- **🟩 Node.js (>=20 LTS)**
 - **🐘 PostgreSQL** – Database for storing product and user information.
 - **🛠️ Git** – Version control system.
 
@@ -111,6 +113,28 @@ pip install -r requirements.txt
 OR (if pip doesn't exist)
 ```sh
 pip3 install -r requirements.txt
+```
+
+### 🔹 Optional: Run with Docker
+
+Build backend image from project root:
+
+```sh
+cd /path/to/AWS_grocery
+docker build -t grocery-backend .
+```
+
+Alternative (explicit backend Dockerfile path):
+
+```sh
+cd /path/to/AWS_grocery
+docker build -t grocery-backend -f backend/Dockerfile backend
+```
+
+Run container:
+
+```sh
+docker run -d --name grocery-backend -p 5000:5000 --env-file backend/.env grocery-backend
 ```
 
 ### 🔹 Set Environment Variables
@@ -197,6 +221,7 @@ This project is licensed under the MIT License.
   - [PostgreSQL konfigurieren](#-PostgreSQL-konfigurieren)
   - [Datenbank befüllen](#-Datenbank-befüllen)
   - [Python-Umgebung einrichten](#-Python-Umgebung-einrichten)
+  - [Optional: Mit Docker starten](#-optional-mit-docker-starten)
   - [Umgebungsvariablen setzen](#-Umgebungsvariablen-setzen)
   - [Anwendung starten](#-Anwendung-starten)
 - [Benutzung](#-Benutzung)
@@ -235,6 +260,7 @@ https://github.com/user-attachments/assets/d1c5c8e4-5b16-486a-b709-4cf6e6cce6bc
 Stelle sicher, dass die folgenden Abhängigkeiten installiert sind, bevor du die Anwendung ausführst:
 
 - **🐍 Python (>=3.11)**
+- **🟩 Node.js (>=20 LTS)**
 - **🐘 PostgreSQL** – Datenbank zur Speicherung von Produkt- und Benutzerinformationen.
 - **🛠️ Git** – Versionskontrollsystem.
 
@@ -283,6 +309,28 @@ pip install -r requirements.txt
 ODER (falls pip nicht existiert)
 ```sh
 pip3 install -r requirements.txt
+```
+
+### 🔹 Optional: Mit Docker starten
+
+Backend-Image aus dem Projekt-Root bauen:
+
+```sh
+cd /pfad/zu/AWS_grocery
+docker build -t grocery-backend .
+```
+
+Alternative (expliziter Pfad zur Backend-Dockerfile):
+
+```sh
+cd /pfad/zu/AWS_grocery
+docker build -t grocery-backend -f backend/Dockerfile backend
+```
+
+Container starten:
+
+```sh
+docker run -d --name grocery-backend -p 5000:5000 --env-file backend/.env grocery-backend
 ```
 
 ### 🔹 Umgebungsvariablen setzen
@@ -343,7 +391,5 @@ Beiträge zu diesem Projekt sind willkommen! Bitte folge diesen Schritten:
 ## 📜 Lizenz
 
 Dieses Projekt ist unter der MIT-Lizenz lizenziert.
-
-
 
 
