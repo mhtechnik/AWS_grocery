@@ -9,8 +9,8 @@ DB_PASSWORD="${db_password}"
 DB_NAME="${db_name}"
 DB_HOST="${db_host}"
 
-REPO_URL="https://github.com/AlejandroRomanIbanez/AWS_grocery.git"
-REPO_BRANCH="version2"
+REPO_URL="${repo_url}"
+REPO_BRANCH="${repo_branch}"
 APP_DIR="/home/ubuntu/AWS_grocery"
 
 export DEBIAN_FRONTEND=noninteractive

@@ -22,7 +22,7 @@ variable "ec2_ami_id" {
 
 variable "ec2_instance_type" {
   type    = string
-  default = "t3.micro"
+  default = "t3.medium"
 }
 
 variable "ec2_keypair_name" {
@@ -49,4 +49,16 @@ variable "db_password" {
   type        = string
   sensitive   = true
   description = "DB Passwort (nicht committen!)"
+}
+
+variable "repo_url" {
+  type        = string
+  description = "Git Repository URL fuer Deployment"
+  default     = "https://github.com/mhtechnik/AWS_grocery.git"
+}
+
+variable "repo_branch" {
+  type        = string
+  description = "Git Branch fuer Deployment"
+  default     = "version2"
 }

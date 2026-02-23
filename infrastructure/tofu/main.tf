@@ -13,6 +13,10 @@ data "aws_subnets" "default" {
   }
 }
 
+data "aws_security_group" "markus" {
+  name = "MarkusSicherheit"
+}
+
 resource "aws_security_group" "ec2_sg" {
   name        = "grocery-ec2-sg"
   description = "SSH + App access"
@@ -30,6 +34,14 @@ resource "aws_security_group" "ec2_sg" {
     description = "App"
     from_port   = var.app_port
     to_port     = var.app_port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "HTTP"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -52,7 +64,7 @@ resource "aws_security_group" "rds_sg" {
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [aws_security_group.ec2_sg.id]
+    security_groups = [data.aws_security_group.markus.id]
   }
 
   egress {
@@ -88,14 +100,32 @@ resource "aws_db_instance" "postgres" {
   db_subnet_group_name   = aws_db_subnet_group.rds_subnets.name
 }
 
+data "template_file" "init" {
+  template = file("${path.module}/init.sh.tpl")
+
+  vars = {
+    db_user     = var.db_user
+    db_password = var.db_password
+    db_name     = var.db_name
+    db_host     = aws_db_instance.postgres.address
+    repo_url    = var.repo_url
+    repo_branch = var.repo_branch
+  }
+}
+
 resource "aws_instance" "ec2" {
   ami                    = var.ec2_ami_id
   instance_type          = var.ec2_instance_type
   key_name               = var.ec2_keypair_name
-  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+  vpc_security_group_ids = [data.aws_security_group.markus.id]
+
+  root_block_device {
+    volume_size = 30
+  }
+
+  user_data = data.template_file.init.rendered
 
   tags = {
     Name = "grocery-ec2"
   }
 }
-
