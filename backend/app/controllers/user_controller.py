@@ -7,7 +7,7 @@ from ..services.user_service import (
     sync_basket_service, get_user_basket, remove_from_basket_service,
     add_product_to_purchased, get_user_purchased_products, get_user_info,
     clear_user_basket, save_avatar, UPLOAD_FOLDER, get_all_users, get_avatar_url,
-    USE_S3_STORAGE, s3_client, S3_BUCKET, DEFAULT_AVATAR, DEFAULT_AVATAR_LOCAL_PATH
+    USE_S3_STORAGE, s3_client, S3_BUCKET, DEFAULT_AVATAR, DEFAULT_AVATAR_LOCAL_PATH, s3_avatar_key
 )
 
 
@@ -244,7 +244,7 @@ def serve_avatar(filename):
             if filename == DEFAULT_AVATAR:
                 response = s3_client.get_object(
                     Bucket=S3_BUCKET,
-                    Key=f"avatars/{DEFAULT_AVATAR}"
+                    Key=s3_avatar_key(DEFAULT_AVATAR)
                 )
                 return send_file(
                     BytesIO(response['Body'].read()),
@@ -254,7 +254,7 @@ def serve_avatar(filename):
             # Try to get requested avatar
             response = s3_client.get_object(
                 Bucket=S3_BUCKET,
-                Key=f"avatars/{filename}"
+                Key=s3_avatar_key(filename)
             )
             return send_file(
                 BytesIO(response['Body'].read()),
@@ -265,7 +265,7 @@ def serve_avatar(filename):
             try:
                 response = s3_client.get_object(
                     Bucket=S3_BUCKET,
-                    Key=f"avatars/{DEFAULT_AVATAR}"
+                    Key=s3_avatar_key(DEFAULT_AVATAR)
                 )
                 return send_file(
                     BytesIO(response['Body'].read()),

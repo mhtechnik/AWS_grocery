@@ -8,6 +8,10 @@ DB_USER="${db_user}"
 DB_PASSWORD="${db_password}"
 DB_NAME="${db_name}"
 DB_HOST="${db_host}"
+AWS_REGION="${aws_region}"
+S3_BUCKET_NAME="${s3_bucket}"
+S3_AVATAR_PREFIX="${s3_prefix}"
+USE_S3_STORAGE="${use_s3}"
 
 REPO_URL="${repo_url}"
 REPO_BRANCH="${repo_branch}"
@@ -16,7 +20,7 @@ APP_DIR="/home/ubuntu/AWS_grocery"
 export DEBIAN_FRONTEND=noninteractive
 
 apt-get update -y
-apt-get install -y ca-certificates curl git gnupg software-properties-common nginx postgresql-client
+apt-get install -y ca-certificates curl git gnupg software-properties-common nginx postgresql-client awscli
 
 # Create 2GB swap file
 fallocate -l 4G /swapfile
@@ -65,6 +69,16 @@ else
 fi
 chown -R ubuntu:ubuntu "$APP_DIR"
 
+if [ "$USE_S3_STORAGE" = "true" ]; then
+  DEFAULT_AVATAR_LOCAL="$APP_DIR/backend/avatar/user_default.png"
+  if [ -f "$DEFAULT_AVATAR_LOCAL" ]; then
+    aws s3 cp "$DEFAULT_AVATAR_LOCAL" "s3://$S3_BUCKET_NAME/$S3_AVATAR_PREFIX/user_default.png" --region "$AWS_REGION"
+    echo "Default avatar uploaded to s3://$S3_BUCKET_NAME/$S3_AVATAR_PREFIX/user_default.png"
+  else
+    echo "WARN: Default avatar not found at $DEFAULT_AVATAR_LOCAL"
+  fi
+fi
+
 # Backend setup with Docker
 if [ -f "$APP_DIR/backend/Dockerfile" ]; then
   docker build -t grocery-backend -f "$APP_DIR/backend/Dockerfile" "$APP_DIR/backend"
@@ -90,6 +104,10 @@ docker run -d --name grocery-backend \
   -e POSTGRES_DB="$DB_NAME" \
   -e POSTGRES_HOST="$DB_HOST" \
   -e POSTGRES_URI="postgresql://$DB_USER:$DB_PASSWORD@$DB_HOST:5432/$DB_NAME" \
+  -e USE_S3_STORAGE="$USE_S3_STORAGE" \
+  -e S3_BUCKET_NAME="$S3_BUCKET_NAME" \
+  -e S3_REGION="$AWS_REGION" \
+  -e S3_AVATAR_PREFIX="$S3_AVATAR_PREFIX" \
   grocery-backend
 
 # Wait for DB (max 5 minutes)

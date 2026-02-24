@@ -81,20 +81,20 @@ resource "aws_db_subnet_group" "rds_subnets" {
 }
 
 resource "aws_db_instance" "postgres" {
-  identifier             = "grocerymate-db"
-  engine                 = "postgres"
-  engine_version         = "17"
-  instance_class         = var.rds_instance_class
-  allocated_storage      = 20
-  storage_type           = "gp3"
+  identifier        = "grocerymate-db"
+  engine            = "postgres"
+  engine_version    = "17"
+  instance_class    = var.rds_instance_class
+  allocated_storage = 20
+  storage_type      = "gp3"
 
-  db_name                = var.db_name
-  username               = var.db_user
-  password               = var.db_password
+  db_name  = var.db_name
+  username = var.db_user
+  password = var.db_password
 
-  publicly_accessible    = false
-  skip_final_snapshot    = true
-  deletion_protection    = false
+  publicly_accessible = false
+  skip_final_snapshot = true
+  deletion_protection = false
 
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   db_subnet_group_name   = aws_db_subnet_group.rds_subnets.name
@@ -110,6 +110,10 @@ data "template_file" "init" {
     db_host     = aws_db_instance.postgres.address
     repo_url    = var.repo_url
     repo_branch = var.repo_branch
+    aws_region  = var.aws_region
+    s3_bucket   = aws_s3_bucket.avatars.bucket
+    s3_prefix   = var.s3_avatar_prefix
+    use_s3      = var.use_s3_storage
   }
 }
 
@@ -118,6 +122,7 @@ resource "aws_instance" "ec2" {
   instance_type          = var.ec2_instance_type
   key_name               = var.ec2_keypair_name
   vpc_security_group_ids = [data.aws_security_group.markus.id]
+  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
   root_block_device {
     volume_size = 30

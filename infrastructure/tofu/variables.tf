@@ -62,3 +62,21 @@ variable "repo_branch" {
   description = "Git Branch fuer Deployment"
   default     = "version2"
 }
+
+variable "s3_bucket_prefix" {
+  type        = string
+  description = "Prefix fuer den Avatar-S3-Bucket-Namen"
+  default     = "grocerymate-avatars"
+}
+
+variable "s3_avatar_prefix" {
+  type        = string
+  description = "Prefix/Ordner fuer Avatare im S3-Bucket"
+  default     = "avatars"
+}
+
+variable "use_s3_storage" {
+  type        = bool
+  description = "Aktiviert S3 als Avatar-Speicher im Backend"
+  default     = true
+}

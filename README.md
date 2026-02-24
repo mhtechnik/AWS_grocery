@@ -26,6 +26,7 @@
   - [Populate Database](#-populate-database)
   - [Set Up Python Environment](#-set-up-python-environment)
   - [Optional: Run with Docker](#-optional-run-with-docker)
+  - [Optional: S3 Avatar Storage (OpenTofu)](#-optional-s3-avatar-storage-opentofu)
   - [Set Environment Variables](#-set-environment-variables)
   - [Start the Application](#-start-the-application)
 - [Usage](#-usage)
@@ -137,6 +138,29 @@ Run container:
 docker run -d --name grocery-backend -p 5000:5000 --env-file backend/.env grocery-backend
 ```
 
+### 🔹 Optional: S3 Avatar Storage (OpenTofu)
+
+The OpenTofu setup can provision a private S3 bucket, IAM role, and EC2 instance profile for avatar storage.
+
+From `infrastructure/tofu`:
+
+```sh
+tofu init
+tofu apply -var-file=dev.tfvars
+```
+
+Upload default avatar with AWS CLI (example):
+
+```sh
+aws s3 cp backend/avatar/user_default.png s3://<your_bucket_name>/avatars/user_default.png --region eu-central-1
+```
+
+You can read the generated bucket name via output:
+
+```sh
+tofu output s3_avatar_bucket_name
+```
+
 ### 🔹 Set Environment Variables
 
 Create a `.env` file:
@@ -222,6 +246,7 @@ This project is licensed under the MIT License.
   - [Datenbank befüllen](#-Datenbank-befüllen)
   - [Python-Umgebung einrichten](#-Python-Umgebung-einrichten)
   - [Optional: Mit Docker starten](#-optional-mit-docker-starten)
+  - [Optional: S3-Avatar-Storage (OpenTofu)](#-optional-s3-avatar-storage-opentofu)
   - [Umgebungsvariablen setzen](#-Umgebungsvariablen-setzen)
   - [Anwendung starten](#-Anwendung-starten)
 - [Benutzung](#-Benutzung)
@@ -333,6 +358,29 @@ Container starten:
 docker run -d --name grocery-backend -p 5000:5000 --env-file backend/.env grocery-backend
 ```
 
+### 🔹 Optional: S3-Avatar-Storage (OpenTofu)
+
+Das OpenTofu-Setup kann einen privaten S3-Bucket, eine IAM-Role und ein EC2 Instance Profile fuer Avatar-Storage bereitstellen.
+
+Aus `infrastructure/tofu`:
+
+```sh
+tofu init
+tofu apply -var-file=dev.tfvars
+```
+
+Standard-Avatar mit AWS CLI hochladen (Beispiel):
+
+```sh
+aws s3 cp backend/avatar/user_default.png s3://<dein_bucket_name>/avatars/user_default.png --region eu-central-1
+```
+
+Den erzeugten Bucket-Namen kannst du ueber den Output lesen:
+
+```sh
+tofu output s3_avatar_bucket_name
+```
+
 ### 🔹 Umgebungsvariablen setzen
 
 Eine .env-Datei erstellen:
@@ -391,5 +439,4 @@ Beiträge zu diesem Projekt sind willkommen! Bitte folge diesen Schritten:
 ## 📜 Lizenz
 
 Dieses Projekt ist unter der MIT-Lizenz lizenziert.
-
 

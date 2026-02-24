@@ -18,9 +18,10 @@ print(f"UPLOAD_FOLDER set to: {UPLOAD_FOLDER}")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 S3_BUCKET = os.getenv('S3_BUCKET_NAME')
 S3_REGION = os.getenv('S3_REGION')
+S3_AVATAR_PREFIX = os.getenv('S3_AVATAR_PREFIX', 'avatars').strip('/')
 USE_S3_STORAGE = os.getenv("USE_S3_STORAGE", "false").lower() == "true"
 DEFAULT_AVATAR = 'user_default.png'
-DEFAULT_AVATAR_S3_URL = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/avatars/{DEFAULT_AVATAR}"
+DEFAULT_AVATAR_S3_URL = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{S3_AVATAR_PREFIX}/{DEFAULT_AVATAR}"
 DEFAULT_AVATAR_LOCAL_PATH = os.path.join(UPLOAD_FOLDER, DEFAULT_AVATAR)
 
 
@@ -52,6 +53,10 @@ def get_s3_client():
 
 
 s3_client = get_s3_client()
+
+
+def s3_avatar_key(filename: str) -> str:
+    return f"{S3_AVATAR_PREFIX}/{filename}"
 
 
 def get_avatar_url(user):
@@ -418,10 +423,10 @@ def save_avatar(user_id, file):
             s3_client.upload_fileobj(
                 file,
                 S3_BUCKET,
-                f"avatars/{filename}",
+                s3_avatar_key(filename),
                 ExtraArgs={'ContentType': file.content_type}
             )
-            user.avatar = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/avatars/{filename}"
+            user.avatar = f"https://{S3_BUCKET}.s3.{S3_REGION}.amazonaws.com/{s3_avatar_key(filename)}"
             db.session.commit()
             current_app.logger.info(f"Avatar for user {user_id} uploaded to S3 as {filename}.")
             return {"message": "Avatar uploaded successfully", "avatar_url": get_avatar_url(user)}
