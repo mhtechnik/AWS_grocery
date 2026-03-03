@@ -1,3 +1,8 @@
+# Haupt-Workflow:
+# tofu validate
+# tofu plan -var-file=dev.tfvars -out=plan.tfplan
+# tofu apply plan.tfplan
+
 provider "aws" {
   region = var.aws_region
 }
@@ -103,6 +108,7 @@ resource "aws_db_instance" "postgres" {
 data "template_file" "init" {
   template = file("${path.module}/init.sh.tpl")
 
+  # Diese Werte werden als Platzhalter in init.sh.tpl ersetzt.
   vars = {
     db_user     = var.db_user
     db_password = var.db_password
@@ -114,6 +120,8 @@ data "template_file" "init" {
     s3_bucket   = aws_s3_bucket.avatars.bucket
     s3_prefix   = var.s3_avatar_prefix
     use_s3      = var.use_s3_storage
+    # CloudWatch Log Group Name fuer Docker awslogs Driver.
+    cw_log_group = aws_cloudwatch_log_group.backend.name
   }
 }
 
@@ -128,6 +136,7 @@ resource "aws_instance" "ec2" {
     volume_size = 30
   }
 
+  # Bootstrap fuer App-Deployment beim ersten Start.
   user_data = data.template_file.init.rendered
 
   tags = {

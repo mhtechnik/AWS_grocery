@@ -12,6 +12,7 @@ AWS_REGION="${aws_region}"
 S3_BUCKET_NAME="${s3_bucket}"
 S3_AVATAR_PREFIX="${s3_prefix}"
 USE_S3_STORAGE="${use_s3}"
+CW_LOG_GROUP="${cw_log_group}"
 
 REPO_URL="${repo_url}"
 REPO_BRANCH="${repo_branch}"
@@ -96,6 +97,7 @@ PY
 )"
 
 # Start backend container
+# Docker awslogs driver schreibt Container-Logs direkt nach CloudWatch.
 docker run -d --name grocery-backend \
   -p 5000:5000 \
   -e JWT_SECRET_KEY="$JWT_SECRET" \
@@ -108,6 +110,10 @@ docker run -d --name grocery-backend \
   -e S3_BUCKET_NAME="$S3_BUCKET_NAME" \
   -e S3_REGION="$AWS_REGION" \
   -e S3_AVATAR_PREFIX="$S3_AVATAR_PREFIX" \
+  --log-driver=awslogs \
+  --log-opt awslogs-region="$AWS_REGION" \
+  --log-opt awslogs-group="$CW_LOG_GROUP" \
+  --log-opt awslogs-stream="backend" \
   grocery-backend
 
 # Wait for DB (max 5 minutes)

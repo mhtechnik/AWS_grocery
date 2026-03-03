@@ -1,3 +1,7 @@
+# Befehle mit Variablen-Datei:
+# tofu plan -var-file=dev.tfvars -out=plan.tfplan
+# tofu apply plan.tfplan
+
 variable "allowed_ssh_cidr" {
   type        = string
   description = "2.203.27.68/32"

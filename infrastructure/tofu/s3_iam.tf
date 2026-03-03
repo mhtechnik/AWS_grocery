@@ -1,3 +1,8 @@
+# Diese Datei enthaelt S3 + IAM fuer Avatar-Storage.
+# Nur pruefen/anzeigen:
+# tofu plan -var-file=dev.tfvars
+# tofu state list
+
 data "aws_caller_identity" "current" {}
 
 locals {
