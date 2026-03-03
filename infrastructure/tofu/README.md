@@ -201,10 +201,6 @@ Uebersicht:
 
 ![OpenTofu AWS Architektur](opentofu_aws_architecture.png)
 
-Detailansicht:
-
-![OpenTofu AWS Architektur Detailliert](opentofu_aws_architecture_detailed.svg)
-
 ## Sicherheitshinweise
 
 - `*.tfvars` und Secrets nicht in Git einchecken (`db_password` ist sensitiv).
