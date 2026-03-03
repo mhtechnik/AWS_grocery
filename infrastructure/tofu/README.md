@@ -12,6 +12,7 @@
 - [Deployment](#deployment)
 - [Outputs](#outputs)
 - [CloudWatch Logging](#cloudwatch-logging)
+- [Architekturdiagramm](#architekturdiagramm)
 - [Sicherheitshinweise](#sicherheitshinweise)
 - [Troubleshooting](#troubleshooting)
 - [Aufraeumen](#aufraeumen)
@@ -170,6 +171,27 @@ CloudWatch-Logs pruefen:
 tofu output cloudwatch_log_group_name
 aws logs tail "$(tofu output -raw cloudwatch_log_group_name)" --follow --region eu-central-1
 ```
+
+## Architekturdiagramm
+
+Im Ordner liegt ein Python-Skript mit AWS-Icons:
+
+- `opentofu_architecture_diagram.py`
+
+Es erzeugt ein PNG-Diagramm der OpenTofu-Architektur (EC2, RDS, S3, IAM, CloudWatch, VPC/Subnets).
+
+Ausfuehrung:
+
+```bash
+cd infrastructure/tofu
+python3 -m pip install diagrams
+sudo apt-get install -y graphviz
+python3 opentofu_architecture_diagram.py
+```
+
+Ergebnisdatei:
+
+- `infrastructure/tofu/opentofu_aws_architecture.png`
 
 ## Sicherheitshinweise
 
