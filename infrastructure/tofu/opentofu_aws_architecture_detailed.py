@@ -12,7 +12,7 @@ from diagrams.aws.management import Cloudwatch
 from diagrams.aws.network import InternetGateway, PublicSubnet, RouteTable, VPC
 from diagrams.aws.security import IAM
 from diagrams.aws.storage import S3
-from diagrams.generic.client import Users
+from diagrams.onprem.client import Users
 
 
 GRAPH_ATTR = {
