@@ -20,7 +20,7 @@ from diagrams.generic.device import Mobile
 
 
 GRAPH_ATTR = {
-    "fontsize": "18",
+    "fontsize": "16",
     "bgcolor": "white",
     "pad": "0.5",
     "splines": "spline",

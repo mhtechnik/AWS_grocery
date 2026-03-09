@@ -4,6 +4,7 @@
 ## Inhaltsverzeichnis
 
 - [Uebersicht](#uebersicht)
+- [Installationsvideo](#installationsvideo)
 - [Architektur](#architektur)
 - [Bereitgestellte AWS-Ressourcen](#bereitgestellte-aws-ressourcen)
 - [Voraussetzungen](#voraussetzungen)
@@ -16,6 +17,19 @@
 - [Sicherheitshinweise](#sicherheitshinweise)
 - [Troubleshooting](#troubleshooting)
 - [Aufraeumen](#aufraeumen)
+- [Update](#update)
+
+## Installationsvideo
+
+Das Installationsvideo liegt direkt in diesem Ordner:
+
+- [Installation.mp4](Installation.mp4)
+
+Wenn dein Markdown-Viewer HTML unterstuetzt, kann es direkt abgespielt werden:
+
+<video src="Installation.mp4" controls preload="metadata" width="960">
+  Dein Viewer unterstuetzt kein eingebettetes Video. Nutze den Link oben.
+</video>
 
 ## Uebersicht
 
@@ -178,9 +192,12 @@ Im Ordner liegt ein Python-Skript mit AWS-Icons:
 
 - `opentofu_architecture_diagram.py`
 - `opentofu_aws_architecture_detailed.py`
+- `opentofu_auto_diagram.py`
 
 Es erzeugt ein PNG-Diagramm der OpenTofu-Architektur (EC2, RDS, S3, IAM, CloudWatch, VPC/Subnets).
 Das zweite Skript erzeugt eine detailliertere SVG-Variante mit expliziten Datenfluessen/Ports.
+Das dritte Skript generiert ein Diagramm automatisch aus den `.tf`-Dateien (inkl. Referenz-Edges).
+Das Auto-Diagramm (`opentofu_auto_diagram.py`) ist aktuell als Beta zu betrachten.
 
 Ausfuehrung:
 
@@ -190,12 +207,25 @@ python3 -m pip install diagrams
 sudo apt-get install -y graphviz
 python3 opentofu_architecture_diagram.py
 python3 opentofu_aws_architecture_detailed.py
+python3 opentofu_auto_diagram.py
 ```
 
 Ergebnisdatei:
 
 - `infrastructure/tofu/opentofu_aws_architecture.png`
 - `infrastructure/tofu/opentofu_aws_architecture_detailed.svg`
+- `infrastructure/tofu/opentofu_aws_architecture_auto.png`
+
+Automatisch bei Struktur-Aenderungen neu generieren (Watch-Modus):
+
+```bash
+cd infrastructure/tofu
+python3 opentofu_auto_diagram.py --watch --interval 2
+```
+
+Hinweis (Beta):
+
+- `opentofu_auto_diagram.py` ist ein laufender Zwischenstand und kann sich in Struktur/Output noch aendern.
 
 Uebersicht:
 
@@ -235,3 +265,9 @@ tofu destroy -var-file=dev.tfvars
 ```
 
 Anschliessend im AWS-Console-Check pruefen, dass EC2, RDS und S3 entfernt sind.
+
+## Update
+
+- 2026-03-09: `Installation.mp4` in die Dokumentation aufgenommen und in der README verlinkt/eingebettet.
+- 2026-03-09: Hinweis korrigiert, es gibt nur `opentofu_auto_diagram.py` (kein `.pyi`).
+- 2026-03-09: Beta-Hinweis beibehalten, jetzt korrekt auf `opentofu_auto_diagram.py` bezogen.
