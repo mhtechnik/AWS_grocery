@@ -3,8 +3,46 @@ frontend/frontend-build.zip
 frontend/temp_extract/
 frontend/src/config.js~
 venv/
+**/.venv/
+**/__pycache__/
+*.pyc
 infrastructure/tofu/*.tfvars
 infrastructure/tofu/.terraform/
 infrastructure/tofu/.terraform.lock.hcl
 infrastructure/tofu/terraform.tfstate*
-echo "*.tfplan" >> .gitignore
+*.tfplan
+
+# General local/IDE files
+.idea/
+**/.idea/
+.vscode/
+**/.vscode/
+*.swp
+*.swo
+*~
+
+# Logs and runtime artifacts
+*.log
+backend/logs/
+
+# Node/Python local deps and build caches
+**/node_modules/
+dist/
+build/
+
+# Environment and secret files (keep examples)
+.env
+.env.*
+!.env.example
+
+# Terraform/OpenTofu state and variable files (keep examples)
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+!.tfvars.example
+
+# Common private keys/certificates
+*.pem
+*.key
+*.p12
