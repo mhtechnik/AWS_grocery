@@ -1,4 +1,5 @@
 
+
 # GroceryMate Infrastruktur (OpenTofu)
 
 ## Inhaltsverzeichnis
@@ -266,8 +267,4 @@ tofu destroy -var-file=dev.tfvars
 
 Anschliessend im AWS-Console-Check pruefen, dass EC2, RDS und S3 entfernt sind.
 
-## Update
 
-- 2026-03-09: `Installation.mp4` in die Dokumentation aufgenommen und in der README verlinkt/eingebettet.
-- 2026-03-09: Hinweis korrigiert, es gibt nur `opentofu_auto_diagram.py` (kein `.pyi`).
-- 2026-03-09: Beta-Hinweis beibehalten, jetzt korrekt auf `opentofu_auto_diagram.py` bezogen.
