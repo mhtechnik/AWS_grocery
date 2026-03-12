@@ -84,9 +84,8 @@ Before creating the database user, you can choose a custom username and password
 Create database and user:
 
 ```sh
-psql -U postgres -c "CREATE DATABASE grocerymate_db;"
 psql -U postgres -c "CREATE USER grocery_user WITH ENCRYPTED PASSWORD '<your_secure_password>';"  # Replace <your_secure_password> with a strong password of your choice
-psql -U postgres -c "ALTER USER grocery_user WITH SUPERUSER;"
+psql -U postgres -c "CREATE DATABASE grocerymate_db OWNER grocery_user;"
 ```
 
 ### 🔹 Populate Database
@@ -135,12 +134,13 @@ docker build -t grocery-backend -f backend/Dockerfile backend
 Run container:
 
 ```sh
-docker run -d --name grocery-backend -p 5000:5000 --env-file backend/.env grocery-backend
+docker run -d --name grocery-backend -p 127.0.0.1:5000:5000 --env-file backend/.env grocery-backend
 ```
 
 ### 🔹 Optional: S3 Avatar Storage (OpenTofu)
 
 The OpenTofu setup can provision a private S3 bucket, IAM role, and EC2 instance profile for avatar storage.
+The state is intentionally local (`terraform.tfstate`). For team workflows, a remote backend such as S3 + DynamoDB locking is recommended.
 
 From `infrastructure/tofu`:
 
@@ -304,9 +304,8 @@ Bevor du den Datenbankbenutzer erstellst, kannst du einen benutzerdefinierten Be
 Datenbank und Benutzer erstellen:
 
 ```sh
-psql -U postgres -c "CREATE DATABASE grocerymate_db;"
 psql -U postgres -c "CREATE USER grocery_user WITH ENCRYPTED PASSWORD '<your_secure_password>';"  # Ersetze <your_secure_password> durch ein starkes Passwort deiner Wahl
-psql -U postgres -c "ALTER USER grocery_user WITH SUPERUSER;"
+psql -U postgres -c "CREATE DATABASE grocerymate_db OWNER grocery_user;"
 ```
 
 ### 🔹 Datenbank befüllen
@@ -355,12 +354,13 @@ docker build -t grocery-backend -f backend/Dockerfile backend
 Container starten:
 
 ```sh
-docker run -d --name grocery-backend -p 5000:5000 --env-file backend/.env grocery-backend
+docker run -d --name grocery-backend -p 127.0.0.1:5000:5000 --env-file backend/.env grocery-backend
 ```
 
 ### 🔹 Optional: S3-Avatar-Storage (OpenTofu)
 
 Das OpenTofu-Setup kann einen privaten S3-Bucket, eine IAM-Role und ein EC2 Instance Profile fuer Avatar-Storage bereitstellen.
+Der State bleibt bewusst lokal (`terraform.tfstate`). Fuer Team-Workflows ist ein Remote-Backend wie S3 mit DynamoDB-Locking sinnvoll.
 
 Aus `infrastructure/tofu`:
 
@@ -439,4 +439,3 @@ Beiträge zu diesem Projekt sind willkommen! Bitte folge diesen Schritten:
 ## 📜 Lizenz
 
 Dieses Projekt ist unter der MIT-Lizenz lizenziert.
-

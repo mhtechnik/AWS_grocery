@@ -19,6 +19,18 @@ variable "app_port" {
   default = 5000
 }
 
+variable "ec2_security_group_name" {
+  type        = string
+  description = "Name der Security Group fuer die EC2-Instanz."
+  default     = "grocery-ec2-sg"
+}
+
+variable "rds_security_group_name" {
+  type        = string
+  description = "Name der Security Group fuer die RDS-Instanz."
+  default     = "grocery-rds-sg"
+}
+
 variable "ec2_ami_id" {
   type        = string
   description = "Ubuntu AMI in eu-central-1"

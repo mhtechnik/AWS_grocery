@@ -9,6 +9,7 @@ venv/
 infrastructure/tofu/*.tfvars
 infrastructure/tofu/.terraform/
 infrastructure/tofu/.terraform.lock.hcl
+infrastructure/tofu/pentofu-locks
 infrastructure/tofu/terraform.tfstate*
 *.tfplan
 

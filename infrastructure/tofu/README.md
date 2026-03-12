@@ -1,5 +1,4 @@
 
-
 # GroceryMate Infrastruktur (OpenTofu)
 
 ## Inhaltsverzeichnis
@@ -56,7 +55,7 @@ Die EC2-Instanz wird ueber `user_data` (`init.sh.tpl`) automatisch gebootstrappe
 6. Die EC2-Instanz fuehrt `init.sh.tpl` aus:
    - installiert Docker, Node.js, Python, Nginx und AWS CLI
    - klont das App-Repository/Branch
-   - baut und startet den Backend-Container auf Port `5000`
+   - baut und startet den Backend-Container auf `127.0.0.1:5000`
    - schreibt Backend-Container-Logs nach CloudWatch
    - laedt optional den Default-Avatar nach S3 hoch
    - importiert den SQL-Dump einmalig in RDS
@@ -87,7 +86,6 @@ Die EC2-Instanz wird ueber `user_data` (`init.sh.tpl`) automatisch gebootstrappe
 - AWS-Account mit konfigurierten Credentials (`aws configure` oder ENV-Variablen)
 - Vorhandenes EC2 Key Pair (Name)
 - Gueltige AMI-ID in der gewaehlten Region
-- Vorhandene Security Group `MarkusSicherheit` im Default-VPC (aktuell im Code referenziert)
 
 Empfohlene lokale Tools:
 
@@ -119,6 +117,8 @@ allowed_ssh_cidr   = "X.X.X.X/32"
 aws_region         = "eu-central-1"
 ec2_ami_id         = "ami-xxxxxxxxxxxxxxxxx"
 ec2_keypair_name   = "dein-keypair-name"
+ec2_security_group_name = "grocery-ec2-sg"
+rds_security_group_name = "grocery-rds-sg"
 db_password        = "starkes-passwort-hier"
 repo_url           = "https://github.com/mhtechnik/AWS_grocery.git"
 repo_branch        = "version2"
@@ -132,11 +132,17 @@ Wichtige Variablen:
 - `allowed_ssh_cidr`: deine oeffentliche IP als CIDR fuer SSH
 - `ec2_ami_id`: Ubuntu-kompatible AMI in der Zielregion
 - `ec2_keypair_name`: vorhandenes EC2-Keypair
+- `ec2_security_group_name` / `rds_security_group_name`: konfigurierbare Namen fuer die erzeugten Security Groups
 - `db_password`: Passwort fuer RDS (sensitiv)
 - `repo_url` / `repo_branch`: Quellrepo fuer Deployment
 - `use_s3_storage`: aktiviert/deaktiviert S3-Avatar-Speicherung
 - `cloudwatch_log_group_name`: Name der CloudWatch Log Group
 - `log_retention_days`: Aufbewahrungsdauer der Logs in Tagen
+
+State-Handling:
+
+- Der OpenTofu-State bleibt lokal (`terraform.tfstate`).
+- Fuer Einzelarbeit ist das ausreichend; fuer Team-Workflows solltest du ein Remote-Backend mit Locking, z. B. S3 + DynamoDB, konfigurieren.
 
 ## Deployment
 
@@ -237,7 +243,8 @@ Uebersicht:
 - `*.tfvars` und Secrets nicht in Git einchecken (`db_password` ist sensitiv).
 - `allowed_ssh_cidr` auf die eigene IP mit `/32` begrenzen.
 - Der Bucket blockiert Public Access und hat Versioning aktiviert.
-- App-Port `5000` ist aktuell fuer `0.0.0.0/0` offen; falls nur Reverse Proxy genutzt wird, enger einschranken.
+- Der Backend-Port `5000` ist nicht oeffentlich in der Security Group freigegeben; externer Zugriff laeuft ueber Nginx auf Port `80`.
+- `init.sh.tpl` bindet den Container explizit an `127.0.0.1:${app_port}`, sodass der Backend-Port nicht auf dem externen Interface lauscht.
 
 ## Troubleshooting
 
@@ -252,9 +259,6 @@ Uebersicht:
 - DB-Verbindung fehlschlaegt:
   - Ingress auf RDS SG muss PostgreSQL (`5432`) vom richtigen EC2 SG erlauben
   - `db_password` und DB-Variablen pruefen
-- `tofu apply` fehlschlaegt wegen fehlender SG:
-  - `main.tf` referenziert `data.aws_security_group.markus` mit Name `MarkusSicherheit`
-  - SG zuerst anlegen oder `main.tf` anpassen
 
 ## Aufraeumen
 
@@ -266,5 +270,3 @@ tofu destroy -var-file=dev.tfvars
 ```
 
 Anschliessend im AWS-Console-Check pruefen, dass EC2, RDS und S3 entfernt sind.
-
-

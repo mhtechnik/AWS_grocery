@@ -18,13 +18,9 @@ data "aws_subnets" "default" {
   }
 }
 
-data "aws_security_group" "markus" {
-  name = "MarkusSicherheit"
-}
-
 resource "aws_security_group" "ec2_sg" {
-  name        = "grocery-ec2-sg"
-  description = "SSH + App access"
+  name        = var.ec2_security_group_name
+  description = "SSH + HTTP access"
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
@@ -33,14 +29,6 @@ resource "aws_security_group" "ec2_sg" {
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [var.allowed_ssh_cidr]
-  }
-
-  ingress {
-    description = "App"
-    from_port   = var.app_port
-    to_port     = var.app_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -60,7 +48,7 @@ resource "aws_security_group" "ec2_sg" {
 }
 
 resource "aws_security_group" "rds_sg" {
-  name        = "grocery-rds-sg"
+  name        = var.rds_security_group_name
   description = "Postgres access from EC2 only"
   vpc_id      = data.aws_vpc.default.id
 
@@ -69,7 +57,7 @@ resource "aws_security_group" "rds_sg" {
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [data.aws_security_group.markus.id]
+    security_groups = [aws_security_group.ec2_sg.id]
   }
 
   egress {
@@ -117,6 +105,7 @@ data "template_file" "init" {
     repo_url    = var.repo_url
     repo_branch = var.repo_branch
     aws_region  = var.aws_region
+    app_port    = tostring(var.app_port)
     s3_bucket   = aws_s3_bucket.avatars.bucket
     s3_prefix   = var.s3_avatar_prefix
     use_s3      = var.use_s3_storage
@@ -129,7 +118,7 @@ resource "aws_instance" "ec2" {
   ami                    = var.ec2_ami_id
   instance_type          = var.ec2_instance_type
   key_name               = var.ec2_keypair_name
-  vpc_security_group_ids = [data.aws_security_group.markus.id]
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
   root_block_device {

@@ -9,6 +9,7 @@ DB_PASSWORD="${db_password}"
 DB_NAME="${db_name}"
 DB_HOST="${db_host}"
 AWS_REGION="${aws_region}"
+APP_PORT="${app_port}"
 S3_BUCKET_NAME="${s3_bucket}"
 S3_AVATAR_PREFIX="${s3_prefix}"
 USE_S3_STORAGE="${use_s3}"
@@ -99,7 +100,7 @@ PY
 # Start backend container
 # Docker awslogs driver schreibt Container-Logs direkt nach CloudWatch.
 docker run -d --name grocery-backend \
-  -p 5000:5000 \
+  -p 127.0.0.1:$${APP_PORT}:$${APP_PORT} \
   -e JWT_SECRET_KEY="$JWT_SECRET" \
   -e POSTGRES_USER="$DB_USER" \
   -e POSTGRES_PASSWORD="$DB_PASSWORD" \
@@ -162,7 +163,7 @@ server {
   }
 
   location /api/ {
-    proxy_pass http://127.0.0.1:5000/;
+    proxy_pass http://127.0.0.1:$${APP_PORT}/;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
